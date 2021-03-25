@@ -5,6 +5,14 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
+/* everything executes in this order:
+ * robotInit
+ * autonomousInit
+ * autonomousPeriodic
+ * teleopInit
+ * teleopPeriodic
+ */
+
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -26,20 +34,25 @@ import edu.wpi.first.networktables.*;
 public class Robot extends TimedRobot {	
   //private final Timer m_timer = new Timer();
   public DifferentialDrive m_drive;
+
   public SpeedControllerGroup m_left;
-	public SpeedControllerGroup m_Right;
+  public SpeedControllerGroup m_Right;
+  
   public Joystick m_leftStick;
   public Joystick m_rightStick;
+  
   public Joystick xboxController;
+
   public Talon shooter;
-	public Talon m_FrontLeft;
-	public Talon m_rearLeft;
-	public Talon m_frontRight;
-	public Talon m_rearRight;
+  public Talon m_FrontLeft;
+  public Talon m_rearLeft;
+  public Talon m_frontRight;
+  public Talon m_rearRight;
   public Talon spinnerMotor;
   public Talon intake;
   public Talon feeder;
   public Talon climb;
+
   public UsbCamera cam1;
   public UsbCamera cam2;
   public NetworkTableEntry camSelect;
