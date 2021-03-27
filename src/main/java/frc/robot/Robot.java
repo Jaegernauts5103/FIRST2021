@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   
   public Joystick xboxController;
 
-  public Talon shooter;
+  public Talon ballShooter;
   public Talon m_FrontLeft;
   public Talon m_rearLeft;
   public Talon m_frontRight;
@@ -74,12 +74,14 @@ public class Robot extends TimedRobot {
     climb = new Talon(4);
     feeder = new Talon(7);
     spinnerMotor = new Talon(8);
-    shooter = new Talon(5);
+    ballShooter = new Talon(5);
 
     cam1 = CameraServer.getInstance().startAutomaticCapture(0);
     cam2 = CameraServer.getInstance().startAutomaticCapture(1);
     camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
   }
+
+  //will pause the program for mili miliseconds
   public void wait(int mili) {
     try {
       Thread.sleep(mili);
@@ -88,29 +90,27 @@ public class Robot extends TimedRobot {
     }
   }
 
+  //will only run once before teleop
   @Override
   public void teleopInit( ) {
     
   }
 
+  //will run over and over agaid during teleop
   @Override
   public void teleopPeriodic() {
-    //boolean Y = xboxController.getRawButton(4);
     m_drive.tankDrive(-m_leftStick.getRawAxis(1), -m_rightStick.getRawAxis(1));
-    if (xboxController.getRawButton(4)) {
+    boolean intakeButtonIsPressed = xboxController.getRawButton(4);
+    double rightTrigger = xboxController.getRawAxis(3);
+    boolean spinnerMotorButton = xboxController.getRawButton(1);
+
+    if (intakeButtonIsPressed) {
       intake.setSpeed(1);
     } else {
       intake.setSpeed(0);
     }
-    double rightTrigger = xboxController.getRawAxis(3);
-    if (rightTrigger > 0.5) {
-      shooter.setSpeed(.95);
-    } else {
-      shooter.setSpeed(0);
-    }
-    shooter.set(xboxController.getRawAxis(3));
-    boolean A = xboxController.getRawButton(1);
-    if (A) {
+    ballShooter.set(rightTrigger);
+    if (spinnerMotorButton) { 
       spinnerMotor.setSpeed(1);
     } else {
       spinnerMotor.setSpeed(0);
