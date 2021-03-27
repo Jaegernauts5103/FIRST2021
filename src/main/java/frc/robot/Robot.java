@@ -34,15 +34,11 @@ import edu.wpi.first.networktables.*;
 public class Robot extends TimedRobot {	
   //private final Timer m_timer = new Timer();
   public DifferentialDrive m_drive;
-
   public SpeedControllerGroup m_left;
   public SpeedControllerGroup m_Right;
-  
   public Joystick m_leftStick;
   public Joystick m_rightStick;
-  
   public Joystick xboxController;
-
   public Talon ballShooter;
   public Talon m_FrontLeft;
   public Talon m_rearLeft;
@@ -52,33 +48,32 @@ public class Robot extends TimedRobot {
   public Talon intake;
   public Talon feeder;
   public Talon climb;
-
   public UsbCamera cam1;
   public UsbCamera cam2;
   public NetworkTableEntry camSelect;
 
   @Override
   public void robotInit() {
-    m_leftStick = new Joystick(0);
-    m_rightStick = new Joystick(1);
+    m_leftStick    = new Joystick(0);
+    m_rightStick   = new Joystick(1);
     xboxController = new Joystick(2);
 
-    intake = new Talon(6); 
-    m_FrontLeft = new Talon(2);
-    m_rearLeft = new Talon(3);
-    m_left = new SpeedControllerGroup(m_FrontLeft, m_rearLeft);
-    m_frontRight = new Talon(1);
-    m_rearRight = new Talon(0);
-    m_Right = new SpeedControllerGroup(m_frontRight, m_rearRight);
-    m_drive = new DifferentialDrive(m_left, m_Right);
-    climb = new Talon(4);
-    feeder = new Talon(7);
-    spinnerMotor = new Talon(8);
-    ballShooter = new Talon(5);
+    intake         = new Talon(6); 
+    m_FrontLeft    = new Talon(2);
+    m_rearLeft     = new Talon(3);
+    m_left         = new SpeedControllerGroup(m_FrontLeft, m_rearLeft);
+    m_frontRight   = new Talon(1);
+    m_rearRight    = new Talon(0);
+    m_Right        = new SpeedControllerGroup(m_frontRight, m_rearRight);
+    m_drive        = new DifferentialDrive(m_left, m_Right);
+    climb          = new Talon(4);
+    feeder         = new Talon(7);
+    spinnerMotor   = new Talon(8);
+    shooter        = new Talon(5);
 
-    cam1 = CameraServer.getInstance().startAutomaticCapture(0);
-    cam2 = CameraServer.getInstance().startAutomaticCapture(1);
-    camSelect = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    cam1           = CameraServer.getInstance().startAutomaticCapture(0);
+    cam2           = CameraServer.getInstance().startAutomaticCapture(1);
+    camSelect      = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
   }
 
   //will pause the program for mili miliseconds
