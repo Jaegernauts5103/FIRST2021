@@ -53,19 +53,22 @@ public class Robot extends TimedRobot {
   public NetworkTableEntry camSelect;
 
   @Override
-  public void robotInit() {
+  public void robotInit() { //TODO what are the "m_"?
     m_leftStick    = new Joystick(0);
     m_rightStick   = new Joystick(1);
     xboxController = new Joystick(2);
 
-    intake         = new Talon(6); 
     m_FrontLeft    = new Talon(2);
     m_rearLeft     = new Talon(3);
     m_left         = new SpeedControllerGroup(m_FrontLeft, m_rearLeft);
+
     m_frontRight   = new Talon(1);
     m_rearRight    = new Talon(0);
     m_Right        = new SpeedControllerGroup(m_frontRight, m_rearRight);
+
     m_drive        = new DifferentialDrive(m_left, m_Right);
+
+    intake         = new Talon(6); 
     climb          = new Talon(4);
     feeder         = new Talon(7);
     spinnerMotor   = new Talon(8);
@@ -77,7 +80,7 @@ public class Robot extends TimedRobot {
   }
 
   //will pause the program for mili miliseconds
-  public void wait(int mili) {
+  public void wait(int mili) { //TODO wait not used, timer is used instead
     try {
       Thread.sleep(mili);
     } catch ( InterruptedException ex) {
@@ -94,27 +97,29 @@ public class Robot extends TimedRobot {
   //will run over and over agaid during teleop
   @Override
   public void teleopPeriodic() {
-    m_drive.tankDrive(-m_leftStick.getRawAxis(1), -m_rightStick.getRawAxis(1));
     boolean intakeButtonIsPressed = xboxController.getRawButton(4);
     double rightTrigger = xboxController.getRawAxis(3);
-    boolean spinnerMotorButton = xboxController.getRawButton(1);
+    boolean AButton = xboxController.getRawButton(1);
+    boolean BButton = xboxController.getRawButton(3);
+    boolean XButton = xboxController.getRawButton(2);
+    boolean RT = m_rightStick.getRawButton(1);
+    boolean XLT = xboxController.getRawButton(5);
+    boolean XRT = xboxController.getRawButton(6);
+    boolean select  = xboxController.getRawButton(8);
 
+    m_drive.tankDrive(-m_leftStick.getRawAxis(1), -m_rightStick.getRawAxis(1));
     if (intakeButtonIsPressed) {
       intake.setSpeed(1);
     } else {
       intake.setSpeed(0);
     }
     ballShooter.set(rightTrigger);
-    if (spinnerMotorButton) { 
+    if (AButton) { 
       spinnerMotor.setSpeed(1);
     } else {
       spinnerMotor.setSpeed(0);
     }
-    //double leftTrigger = xboxController.getRawAxis(2);{
-   // 
-    //}
-    boolean B = xboxController.getRawButton(3);
-    if (B) {
+    if (BButton) {
       feeder.setSpeed(1);
       //spinnerMotor.setSpeed(1);
     }
@@ -122,21 +127,15 @@ public class Robot extends TimedRobot {
       feeder.setSpeed(0);
       //spinnerMotor.setSpeed(0);
     }
-    boolean X = xboxController.getRawButton(2);
-    if (X) {
+    if (XButton) {
       feeder.setSpeed(1);
       intake.setSpeed(1);
     }
-    
-    boolean RT = m_rightStick.getRawButton(1); //TODO make sure this is the right button
     if (RT){
       camSelect.setString(cam2.getName()); //TODO organize cam1 and 2
     }else{
       camSelect.setString(cam1.getName());
     }
-
-    boolean XRT = xboxController.getRawButton(6);
-    boolean XLT = xboxController.getRawButton(5);
     if (XLT){
       climb.setSpeed(0.1);
     }else if (XRT) {
@@ -144,8 +143,6 @@ public class Robot extends TimedRobot {
     }else {
       climb.setSpeed(0);
     }
-
-    boolean select  = xboxController.getRawButton(8);
     if (select){
       spinnerMotor.setSpeed(1);
     }else {
