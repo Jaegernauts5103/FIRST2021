@@ -21,17 +21,21 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.cscore.CvSink;
+import edu.wpi.cscore.CvSource;
 import edu.wpi.cscore.UsbCamera;
 import edu.wpi.first.cameraserver.*;
 import edu.wpi.first.networktables.*;
 
+import org.opencv.core.Mat;
+import org.opencv.imgproc.Imgproc;
 
 
 /**
  * This is a demo program showing the use of the RobotDrive class, specifically
  * it contains the code necessary to operate a robot with tank drive.
  */
-public class Robot extends TimedRobot {	
+public class Robot extends TimedRobot {
   //private final Timer m_timer = new Timer();
   public DifferentialDrive m_drive;
   public SpeedControllerGroup m_left;
@@ -52,6 +56,9 @@ public class Robot extends TimedRobot {
   public UsbCamera cam2;
   public NetworkTableEntry camSelect;
 
+  public Mat sourceImg = new Mat(); //input from whatever the camera says
+  public Mat outputImg = new Mat(); //same thing but blurry and HSV
+
   @Override
   public void robotInit() { //TODO what are the "m_"?
     m_leftStick    = new Joystick(0);
@@ -68,7 +75,7 @@ public class Robot extends TimedRobot {
 
     m_drive        = new DifferentialDrive(m_left, m_Right);
 
-    intake         = new Talon(6); 
+    intake         = new Talon(6);
     climb          = new Talon(4);
     feeder         = new Talon(7);
     spinnerMotor   = new Talon(8);
@@ -76,7 +83,23 @@ public class Robot extends TimedRobot {
 
     cam1           = CameraServer.getInstance().startAutomaticCapture(0);
     cam2           = CameraServer.getInstance().startAutomaticCapture(1);
-    camSelect      = NetworkTableInstance.getDefault().getTable("").getEntry("CameraSelection");
+    camSelect      = NetworkTableInstance.getDefault().getTable("")
+      .getEntry("CameraSelection");
+
+    cam1.setResolution(640,480);
+    cam2.setResolution(640,480);
+    CvSink cvSink = CameraServer.getInstance().getVideo(0);
+    CvSource outputStream = CameraServer.getInstance()
+      .putVideo("Blur", 640, 480);
+
+      while(!Thread.interrupted()) {
+        if (cvSink.grabFrame(sourceImg) == 0) {
+          continue;
+        }
+        Imgproc.cvtColor(sourceImg, outputImg, Imgproc.COLOR_BGR2HSV);
+        outputStream.putFrame(outputImg);
+      }
+    }).start();
   }
 
   //will pause the program for mili miliseconds
@@ -91,7 +114,7 @@ public class Robot extends TimedRobot {
   //will only run once before teleop
   @Override
   public void teleopInit( ) {
-    
+
   }
 
   //will run over and over agaid during teleop
@@ -114,7 +137,7 @@ public class Robot extends TimedRobot {
       intake.setSpeed(0);
     }
     ballShooter.set(rightTrigger);
-    if (AButton) { 
+    if (AButton) {
       spinnerMotor.setSpeed(1);
     } else {
       spinnerMotor.setSpeed(0);
@@ -152,13 +175,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    m_drive.tankDrive(.5, .5);
-    Timer.delay(4);
-    m_drive.tankDrive(0, 0);
 
   }
 
   @Override
   public void autonomousPeriodic() {}
-    
+
 }
