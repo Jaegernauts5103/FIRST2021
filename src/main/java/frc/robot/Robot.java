@@ -75,6 +75,8 @@ public class Robot extends TimedRobot {
   public int intakeActivationPosition; //TODO this needs to be found
   public Scalar low = new Scalar(25, 50, 50); //TODO this is an estimation
   public Scalar high = new Scalar(35, 255, 255);//TODO estimation
+  public Scalar markerLow = new Scalar(20, 25, 25);
+  public scalar markerHigh = new Scalar(25, 180, 180);
   public double minBallArea = 1;
   public double minMarkerArea = 1;
 
@@ -110,7 +112,7 @@ public class Robot extends TimedRobot {
     CvSink cvSink = CameraServer.getInstance().getVideo(0);
     CvSource outputStream = CameraServer.getInstance()
       .putVideo("Blur", 640, 480);
-
+    //continuously processes the image so we see the targets not the field
     new Thread(() -> {
       UsbCamera camera = CameraServer.getInstance().startAutomaticCapture();
       camera.setResolution(640, 480);
@@ -196,11 +198,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     Point ballPos;
-    if (currBall != 3) ballPos = findTarget();
+    //finds the 3 balls. If the 3 balls have been found, finds the exit
+    if (currBall != 3) ballPos = findTarget;
     else ballPos = findEnd();
+    //if a ball is close enough to pick up...
     if (tryPickUpBall(ballPos)){
-      if (currBall == 0){
-        double time = autoTimer.get();
+      if (currBall == 0){ //if it's the first ball...
+        double time = autoTimer.get(); //used to determine red or blue path
         if (time < 2) isRedPath = true;
         else isRedPath = false;
       } else if (currBall == 1){
@@ -220,6 +224,8 @@ public class Robot extends TimedRobot {
           Timer.delay(1);
         }
       } else {
+        low = markerLow;
+        high = markerHigh;
         if (isRedPath) {
           m_drive.tankDrive(-0.25, -.5);
           Timer.delay(1);
