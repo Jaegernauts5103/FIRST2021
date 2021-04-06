@@ -59,6 +59,10 @@ public class Robot extends TimedRobot {
   public Mat sourceImg = new Mat(); //input from whatever the camera says
   public Mat outputImg = new Mat(); //same thing but blurry and HSV
 
+  public boolean isRedPath;
+  public int currBall;
+  public double timerValue;
+
   @Override
   public void robotInit() { //TODO what are the "m_"?
     m_leftStick    = new Joystick(0);
@@ -101,22 +105,9 @@ public class Robot extends TimedRobot {
       }
     }).start();
   }
-
-  //will pause the program for mili miliseconds
-  public void wait(int mili) { //TODO wait not used, timer is used instead
-    try {
-      Thread.sleep(mili);
-    } catch ( InterruptedException ex) {
-      Thread.currentThread().interrupt();
-    }
-  }
-
   //will only run once before teleop
   @Override
-  public void teleopInit( ) {
-
-  }
-
+  public void teleopInit( ) {}
   //will run over and over agaid during teleop
   @Override
   public void teleopPeriodic() {
@@ -172,12 +163,10 @@ public class Robot extends TimedRobot {
       spinnerMotor.setSpeed(0);
     }
 }
-
   @Override
   public void autonomousInit() {
 
   }
-
   @Override
   public void autonomousPeriodic() {}
 
